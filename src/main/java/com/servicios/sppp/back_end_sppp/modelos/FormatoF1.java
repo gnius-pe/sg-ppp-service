@@ -23,6 +23,10 @@ public class FormatoF1 implements Serializable {
     @Column(name = "estado_formato_f1")
     private boolean estadoFormatoF1;
 
+    @ManyToOne
+    @JoinColumn(name = "id_alumno")
+    private Alumno alumno;
+
     public FormatoF1() {
     }
 
@@ -72,5 +76,13 @@ public class FormatoF1 implements Serializable {
 
     public void setEstadoFormatoF1(boolean estadoFormatoF1) {
         this.estadoFormatoF1 = estadoFormatoF1;
+    }
+
+    public Alumno getAlumno() {
+        return alumno;
+    }
+
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
     }
 }

@@ -22,6 +22,10 @@ public class CartaACeptacion implements Serializable {
     @Column(name = "estado_carta_aceptacion")
     private boolean estadoCartaAceptacion;
 
+    @ManyToOne
+    @JoinColumn(name = "id_alumno")
+    private Alumno alumno;
+
     public CartaACeptacion() {
     }
 
@@ -71,5 +75,13 @@ public class CartaACeptacion implements Serializable {
 
     public void setEstadoCartaAceptacion(boolean estadoCartaAceptacion) {
         this.estadoCartaAceptacion = estadoCartaAceptacion;
+    }
+
+    public Alumno getAlumno() {
+        return alumno;
+    }
+
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
     }
 }

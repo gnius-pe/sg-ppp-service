@@ -21,6 +21,10 @@ public class SolicitudPPP implements Serializable {
     @Column(name = "estado_solicitud_ppp")
     boolean estadoSolicitudPPP;
 
+    @ManyToOne
+    @JoinColumn(name = "id_alumno")
+    private Alumno alumno;
+
     public SolicitudPPP() {
     }
 
@@ -62,5 +66,13 @@ public class SolicitudPPP implements Serializable {
 
     public void setEstadoSolicitudPPP(boolean estadoSolicitudPPP) {
         this.estadoSolicitudPPP = estadoSolicitudPPP;
+    }
+
+    public Alumno getAlumno() {
+        return alumno;
+    }
+
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
     }
 }
