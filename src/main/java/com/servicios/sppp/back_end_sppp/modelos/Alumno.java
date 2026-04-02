@@ -1,25 +1,58 @@
 package com.servicios.sppp.back_end_sppp.modelos;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.io.Serializable;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
-public class Alumno implements Serializable {
-    private static final long serialVersionUID = 1L;
+@Table(name = "alumno")
+public class Alumno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotBlank(message = "El nombre es requerido")
+    @Size(max = 100, message = "El nombre no puede exceder 100 caracteres")
     private String nombre;
+
+    @NotBlank(message = "El apellido es requerido")
+    @Size(max = 100, message = "El apellido no puede exceder 100 caracteres")
     private String apellido;
+
+    @NotBlank(message = "El email es requerido")
+    @Email(message = "El email debe tener un formato válido")
+    @Column(unique = true)
     private String email;
+
+    @NotBlank(message = "El código es requerido")
+    @Size(max = 20, message = "El código no puede exceder 20 caracteres")
+    @Column(unique = true)
     private String codigo;
+
+    @Size(max = 255, message = "La dirección no puede exceder 255 caracteres")
     private String direccionActual;
+
+    @Size(max = 20, message = "El número de celular no puede exceder 20 caracteres")
     private String numeroCelular;
-    private String pasword;
+
+    @NotBlank(message = "La contraseña es requerida")
+    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
+    private String password;
+
+    @OneToMany(mappedBy = "alumno")
+    private List<SolicitudPPP> solicitudes;
+
+    @OneToMany(mappedBy = "alumno")
+    private List<CartaACeptacion> cartasAceptacion;
+
+    @OneToMany(mappedBy = "alumno")
+    private List<FormatoF1> formatosF1;
+
+    @OneToMany(mappedBy = "alumno")
+    private List<PreDocumentosPPP> preDocumentosPPP;
 
     public Alumno() {
     }
@@ -80,11 +113,43 @@ public class Alumno implements Serializable {
         this.numeroCelular = numeroCelular;
     }
 
-    public String getPasword() {
-        return pasword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasword(String pasword) {
-        this.pasword = pasword;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<SolicitudPPP> getSolicitudes() {
+        return solicitudes;
+    }
+
+    public void setSolicitudes(List<SolicitudPPP> solicitudes) {
+        this.solicitudes = solicitudes;
+    }
+
+    public List<CartaACeptacion> getCartasAceptacion() {
+        return cartasAceptacion;
+    }
+
+    public void setCartasAceptacion(List<CartaACeptacion> cartasAceptacion) {
+        this.cartasAceptacion = cartasAceptacion;
+    }
+
+    public List<FormatoF1> getFormatosF1() {
+        return formatosF1;
+    }
+
+    public void setFormatosF1(List<FormatoF1> formatosF1) {
+        this.formatosF1 = formatosF1;
+    }
+
+    public List<PreDocumentosPPP> getPreDocumentosPPP() {
+        return preDocumentosPPP;
+    }
+
+    public void setPreDocumentosPPP(List<PreDocumentosPPP> preDocumentosPPP) {
+        this.preDocumentosPPP = preDocumentosPPP;
     }
 }
