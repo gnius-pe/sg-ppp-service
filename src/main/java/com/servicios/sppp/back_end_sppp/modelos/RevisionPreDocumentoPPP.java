@@ -9,13 +9,15 @@ public class RevisionPreDocumentoPPP {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "id_docente")
-    private long idDocente;
+    @ManyToOne
+    @JoinColumn(name = "id_docente")
+    private Docente docente;
 
-    @Column(name = "id_pre_documentos_ppp")
-    private long idPreDocuementoPPP;
+    @OneToOne
+    @JoinColumn(name = "id_pre_documentos_ppp")
+    private PreDocumentosPPP preDocumentosPPP;
 
-    @Column(name = "carrecciones")
+    @Column(name = "correcciones")
     private String correcciones;
 
     public RevisionPreDocumentoPPP() {
@@ -29,20 +31,20 @@ public class RevisionPreDocumentoPPP {
         this.id = id;
     }
 
-    public long getIdDocente() {
-        return idDocente;
+    public Docente getDocente() {
+        return docente;
     }
 
-    public void setIdDocente(long idDocente) {
-        this.idDocente = idDocente;
+    public void setDocente(Docente docente) {
+        this.docente = docente;
     }
 
-    public long getIdPreDocuementoPPP() {
-        return idPreDocuementoPPP;
+    public PreDocumentosPPP getPreDocumentosPPP() {
+        return preDocumentosPPP;
     }
 
-    public void setIdPreDocuementoPPP(long idPreDocuementoPPP) {
-        this.idPreDocuementoPPP = idPreDocuementoPPP;
+    public void setPreDocumentosPPP(PreDocumentosPPP preDocumentosPPP) {
+        this.preDocumentosPPP = preDocumentosPPP;
     }
 
     public String getCorrecciones() {

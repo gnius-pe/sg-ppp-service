@@ -9,19 +9,27 @@ public class PreDocumentosPPP {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "id_alumno")
-    private long idAlumno;
+    @OneToOne
+    @JoinColumn(name = "id_alumno")
+    private Alumno alumno;
 
-    @Column(name = "id_solicitud")
-    private long idSolicitud;
+    @OneToOne
+    @JoinColumn(name = "id_solicitud")
+    private SolicitudPPP solicitud;
 
-    @Column(name = "id_carta_aceptacion")
-    private long idCartaAceptacion;
+    @OneToOne
+    @JoinColumn(name = "id_carta_aceptacion")
+    private CartaACeptacion cartaAceptacion;
 
-    @Column(name = "id_formato_f1")
-    private long idFormatoF1;
+    @OneToOne
+    @JoinColumn(name = "id_formato_f1")
+    private FormatoF1 formatoF1;
 
-    @Column(name = "estate_documentos_ppp")
+    @OneToOne
+    @JoinColumn(name = "id_revision_pre_documento")
+    private RevisionPreDocumentoPPP revisionPreDocumento;
+
+    @Column(name = "estado_documentos_ppp")
     private boolean estadoDocumentoPPP;
 
     public PreDocumentosPPP() {
@@ -35,36 +43,44 @@ public class PreDocumentosPPP {
         this.id = id;
     }
 
-    public long getIdAlumno() {
-        return idAlumno;
+    public Alumno getAlumno() {
+        return alumno;
     }
 
-    public void setIdAlumno(long idAlumno) {
-        this.idAlumno = idAlumno;
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
     }
 
-    public long getIdSolicitud() {
-        return idSolicitud;
+    public SolicitudPPP getSolicitud() {
+        return solicitud;
     }
 
-    public void setIdSolicitud(long idSolicitud) {
-        this.idSolicitud = idSolicitud;
+    public void setSolicitud(SolicitudPPP solicitud) {
+        this.solicitud = solicitud;
     }
 
-    public long getIdCartaAceptacion() {
-        return idCartaAceptacion;
+    public CartaACeptacion getCartaAceptacion() {
+        return cartaAceptacion;
     }
 
-    public void setIdCartaAceptacion(long idCartaAceptacion) {
-        this.idCartaAceptacion = idCartaAceptacion;
+    public void setCartaAceptacion(CartaACeptacion cartaAceptacion) {
+        this.cartaAceptacion = cartaAceptacion;
     }
 
-    public long getIdFormatoF1() {
-        return idFormatoF1;
+    public FormatoF1 getFormatoF1() {
+        return formatoF1;
     }
 
-    public void setIdFormatoF1(long idFormatoF1) {
-        this.idFormatoF1 = idFormatoF1;
+    public void setFormatoF1(FormatoF1 formatoF1) {
+        this.formatoF1 = formatoF1;
+    }
+
+    public RevisionPreDocumentoPPP getRevisionPreDocumento() {
+        return revisionPreDocumento;
+    }
+
+    public void setRevisionPreDocumento(RevisionPreDocumentoPPP revisionPreDocumento) {
+        this.revisionPreDocumento = revisionPreDocumento;
     }
 
     public boolean isEstadoDocumentoPPP() {

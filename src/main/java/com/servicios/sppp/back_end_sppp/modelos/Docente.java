@@ -1,10 +1,8 @@
 package com.servicios.sppp.back_end_sppp.modelos;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 public class Docente implements Serializable {
@@ -21,6 +19,9 @@ public class Docente implements Serializable {
     private String pasword;
 
     private String rol;
+
+    @OneToMany(mappedBy = "docente")
+    private List<RevisionPreDocumentoPPP> revisiones;
 
     public Docente(){
 
@@ -96,5 +97,13 @@ public class Docente implements Serializable {
 
     public void setPasword(String pasword) {
         this.pasword = pasword;
+    }
+
+    public List<RevisionPreDocumentoPPP> getRevisiones() {
+        return revisiones;
+    }
+
+    public void setRevisiones(List<RevisionPreDocumentoPPP> revisiones) {
+        this.revisiones = revisiones;
     }
 }
