@@ -9,7 +9,7 @@ public class PreDocumentosPPP {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_alumno")
     private Alumno alumno;
 
