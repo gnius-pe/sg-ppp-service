@@ -9,20 +9,17 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/beta")
 public class AlumnoControlador {
     @Autowired
-    AlumnoServicioImpl alumnoServicio;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private AlumnoServicioImpl alumnoServicio;
 
     private final AlumnoMapper mapper = AlumnoMapper.INSTANCE;
 
@@ -38,8 +35,6 @@ public class AlumnoControlador {
     @PostMapping("/guardar")
     public ResponseEntity<AlumnoResponse> guardarAlumno(@RequestBody AlumnoRequest request){
         Alumno alumno = mapper.toModel(request);
-        String passwordEncriptado = passwordEncoder.encode(alumno.getPassword());
-        alumno.setPassword(passwordEncriptado);
         Alumno nuevoAlumno = alumnoServicio.guardar(alumno);
         return new ResponseEntity<>(mapper.toResponse(nuevoAlumno), HttpStatus.CREATED);
     }
@@ -48,33 +43,28 @@ public class AlumnoControlador {
     @GetMapping("/alumno/{id}")
     public ResponseEntity<AlumnoResponse> obtenerAlumnoId(@PathVariable long id){
         Alumno usuarioId = alumnoServicio.obtenerPorId(id);
+        if (usuarioId == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(mapper.toResponse(usuarioId));
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @GetMapping("/alumno/sesion/{email}/{password}")
     public ResponseEntity<AlumnoResponse> validarAlumno(@PathVariable String email, @PathVariable String password){
-        List<Alumno> alumnos = alumnoServicio.obtenerTodo();
-        for(Alumno alumno: alumnos){
-            if(alumno.getEmail().equals(email) && passwordEncoder.matches(password, alumno.getPassword())){
-                return ResponseEntity.ok(mapper.toResponse(alumno));
-            }
-        }
-        return ResponseEntity.ok(null);
+        Optional<Alumno> alunoOpt = alumnoServicio.iniciarSesion(email, password);
+        return alunoOpt.map(alumno -> ResponseEntity.ok(mapper.toResponse(alumno)))
+                .orElse(ResponseEntity.ok(null));
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PutMapping("/alumno/{id}")
     public ResponseEntity<AlumnoResponse> actualizar(@PathVariable long id, @RequestBody AlumnoRequest request){
-        Alumno usuarioId = alumnoServicio.obtenerPorId(id);
-        usuarioId.setNombre(request.getNombre());
-        usuarioId.setApellido(request.getApellido());
-        usuarioId.setEmail(request.getEmail());
-        usuarioId.setCodigo(request.getCodigo());
-        usuarioId.setDireccionActual(request.getDireccionActual());
-        usuarioId.setNumeroCelular(request.getNumeroCelular());
-        usuarioId.setPassword(passwordEncoder.encode(request.getPassword()));
-        Alumno usuarioActualizado = alumnoServicio.guardar(usuarioId);
+        Alumno alumno = mapper.toModel(request);
+        Alumno usuarioActualizado = alumnoServicio.actualizar(id, alumno);
+        if (usuarioActualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
         return new ResponseEntity<>(mapper.toResponse(usuarioActualizado), HttpStatus.CREATED);
     }
 
