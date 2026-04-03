@@ -16,7 +16,7 @@ class UsuarioServicioImplTest {
     AlumnoRepositorio usuarioRepositorio;
 
     @InjectMocks
-    UsuarioServicioImpl usuarioServicio;
+    AlumnoServicioImpl usuarioServicio;
 
     private Alumno alumno;
 
@@ -29,7 +29,7 @@ class UsuarioServicioImplTest {
         alumno.setCodigo("0020190504");
         alumno.setDireccionActual("Tingo Maria");
         alumno.setEmail("igor.ramos@unas.edu.pe");
-        alumno.setPasword("12345678");
+        alumno.setPassword("12345678");
     }
 
     @Test
