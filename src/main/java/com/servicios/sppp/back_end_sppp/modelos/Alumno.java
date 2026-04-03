@@ -42,6 +42,9 @@ public class Alumno {
     @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
     private String password;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
     @OneToMany(mappedBy = "alumno")
     private List<SolicitudPPP> solicitudes;
 
@@ -119,6 +122,14 @@ public class Alumno {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public List<SolicitudPPP> getSolicitudes() {

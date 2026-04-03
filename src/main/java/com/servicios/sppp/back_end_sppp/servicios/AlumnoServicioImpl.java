@@ -20,7 +20,7 @@ public class AlumnoServicioImpl implements IMetodosCRUD<Alumno>{
 
     @Override
     public List<Alumno> obtenerTodo() {
-        return alumnoRepositorio.findAll();
+        return alumnoRepositorio.findByIsDeletedFalse();
     }
 
     @Override
@@ -32,16 +32,20 @@ public class AlumnoServicioImpl implements IMetodosCRUD<Alumno>{
 
     @Override
     public Alumno obtenerPorId(long id) {
-        return alumnoRepositorio.findById(id).orElse(null);
+        return alumnoRepositorio.findByIdAndIsDeletedFalse(id).orElse(null);
     }
 
     @Override
     public void eliminar(long id) {
-        alumnoRepositorio.deleteById(id);
+        Alumno alumno = obtenerPorId(id);
+        if (alumno != null) {
+            alumno.setDeleted(true);
+            alumnoRepositorio.save(alumno);
+        }
     }
 
     public Alumno buscarPorEmail(String email) {
-        return alumnoRepositorio.findByEmail(email).orElse(null);
+        return alumnoRepositorio.findByEmailAndIsDeletedFalse(email).orElse(null);
     }
 
     public boolean validarCredenciales(String email, String password) {
