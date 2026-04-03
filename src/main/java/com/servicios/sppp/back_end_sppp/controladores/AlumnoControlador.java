@@ -6,13 +6,13 @@ import com.servicios.sppp.back_end_sppp.dto.AlumnoResponse;
 import com.servicios.sppp.back_end_sppp.mapper.AlumnoMapper;
 import com.servicios.sppp.back_end_sppp.modelos.Alumno;
 import com.servicios.sppp.back_end_sppp.servicios.AlumnoServicioImpl;
+import com.servicios.sppp.back_end_sppp.servicios.ResultadoOperacion;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/beta")
@@ -52,32 +52,31 @@ public class AlumnoControlador {
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @GetMapping("/alumno/sesion/{email}/{password}")
     public ResponseEntity<ApiResponse<AlumnoResponse>> validarAlumno(@PathVariable String email, @PathVariable String password) {
-        Optional<Alumno> alumnoOpt = alumnoServicio.iniciarSesion(email, password);
-        if (alumnoOpt.isPresent()) {
-            return ResponseEntity.ok(ApiResponse.success(mapper.toResponse(alumnoOpt.get())));
-        }
-        return ResponseEntity.ok(ApiResponse.unauthorized("Credenciales inválidas"));
+        return alumnoServicio.iniciarSesion(email, password)
+                .map(alumno -> ResponseEntity.ok(ApiResponse.success(mapper.toResponse(alumno))))
+                .orElse(ResponseEntity.ok(ApiResponse.unauthorized("Credenciales inválidas")));
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PutMapping("/alumno/{id}")
     public ResponseEntity<ApiResponse<AlumnoResponse>> actualizar(@PathVariable long id, @RequestBody AlumnoRequest request) {
         Alumno alumno = mapper.toModel(request);
-        Alumno usuarioActualizado = alumnoServicio.actualizar(id, alumno);
-        if (usuarioActualizado == null) {
-            return ResponseEntity.ok(ApiResponse.notFound("Alumno no encontrado"));
+        ResultadoOperacion<Alumno> resultado = alumnoServicio.actualizar(id, alumno);
+        
+        if (!resultado.isEncontrado()) {
+            return ResponseEntity.ok(ApiResponse.notFound(resultado.getMessage()));
         }
-        return ResponseEntity.ok(ApiResponse.success(mapper.toResponse(usuarioActualizado), "Alumno actualizado exitosamente"));
+        return ResponseEntity.ok(ApiResponse.success(mapper.toResponse(resultado.getData()), resultado.getMessage()));
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @DeleteMapping("/alumno/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminarAlumno(@PathVariable long id) {
-        Alumno alumno = alumnoServicio.obtenerPorId(id);
-        if (alumno == null) {
-            return ResponseEntity.ok(ApiResponse.notFound("Alumno no encontrado"));
+        ResultadoOperacion<Alumno> resultado = alumnoServicio.eliminarConVerificacion(id);
+        
+        if (!resultado.isEncontrado()) {
+            return ResponseEntity.ok(ApiResponse.notFound(resultado.getMessage()));
         }
-        alumnoServicio.eliminar(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Alumno eliminado exitosamente"));
+        return ResponseEntity.ok(ApiResponse.success(null, resultado.getMessage()));
     }
 }

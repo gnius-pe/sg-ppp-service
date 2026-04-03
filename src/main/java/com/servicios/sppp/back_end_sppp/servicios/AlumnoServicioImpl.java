@@ -64,10 +64,10 @@ public class AlumnoServicioImpl implements IMetodosCRUD<Alumno>{
         return Optional.empty();
     }
 
-    public Alumno actualizar(long id, Alumno alumnoActualizado) {
+    public ResultadoOperacion<Alumno> actualizar(long id, Alumno alumnoActualizado) {
         Alumno alumnoExistente = obtenerPorId(id);
         if (alumnoExistente == null) {
-            return null;
+            return ResultadoOperacion.noEncontrado("Alumno no encontrado");
         }
         if (alumnoActualizado.getNombre() != null) {
             alumnoExistente.setNombre(alumnoActualizado.getNombre());
@@ -91,6 +91,16 @@ public class AlumnoServicioImpl implements IMetodosCRUD<Alumno>{
             String passwordEncriptado = passwordEncoder.encode(alumnoActualizado.getPassword());
             alumnoExistente.setPassword(passwordEncriptado);
         }
-        return alumnoRepositorio.save(alumnoExistente);
+        Alumno actualizado = alumnoRepositorio.save(alumnoExistente);
+        return ResultadoOperacion.exito(actualizado, "Alumno actualizado exitosamente");
+    }
+
+    public ResultadoOperacion<Alumno> eliminarConVerificacion(long id) {
+        Alumno alumno = obtenerPorId(id);
+        if (alumno == null) {
+            return ResultadoOperacion.noEncontrado("Alumno no encontrado");
+        }
+        eliminar(id);
+        return ResultadoOperacion.exito(null, "Alumno eliminado exitosamente");
     }
 }
