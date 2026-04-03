@@ -95,3 +95,57 @@ Backend del sistema de gestión de prácticas pre-profesionales desarrollado con
 | MySQL | 3306 | Base de datos |
 | MinIO API | 9000 | Almacenamiento de archivos |
 | MinIO Console | 9001 | Interfaz administrativa MinIO |
+
+## Convenciones de Contribución
+
+### Conventional Commits
+
+Este proyecto utiliza el estándar [Conventional Commits](https://www.conventionalcommits.org/) para los mensajes de commit.
+
+#### Formato
+
+```
+<tipo>(<scope>): <descripción>
+
+[body opcional]
+
+[footer opcional]
+```
+
+#### Tipos de Commit
+
+| Tipo | Descripción |
+|------|-------------|
+| `feat` | Nueva funcionalidad o característica |
+| `fix` | Corrección de un bug |
+| `refactor` | Refactorización sin cambio de funcionalidad |
+| `docs` | Cambios únicamente en documentación |
+| `style` | Formato, colores, indentación (sin cambio de lógica) |
+| `test` | Agregar o corregir tests |
+| `chore` | Tareas de mantenimiento, dependencias |
+| `perf` | Mejora de rendimiento |
+| `build` | Cambios en el sistema de build o dependencias |
+| `ci` | Cambios en pipelines de CI/CD |
+
+#### Ejemplos
+
+```bash
+# Nueva funcionalidad
+git commit -m "feat(alumno): agregar endpoint para login"
+
+# Corrección de bug
+git commit -m "fix(solicitud): corregir validación de URL"
+
+# Refactorización
+git commit -m "refactor: simplificar lógica de autenticación"
+
+# Documentación
+git commit -m "docs: actualizar README con instrucciones de instalación"
+```
+
+#### Reglas
+
+- Usar imperative mood (ej. "add" no "added" o "adds")
+- Limitar la descripción a 50 caracteres
+- El body es opcional, usar si el cambio requiere más contexto
+- El scope es opcional pero recomendado (ej. `alumno`, `solicitud`, `docente`)
