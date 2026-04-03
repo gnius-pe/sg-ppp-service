@@ -71,9 +71,13 @@ public class AlumnoControlador {
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @DeleteMapping("/alumno/{id}")
     public ResponseEntity<HashMap<String,Boolean>> eliminarAlumno(@PathVariable long id){
-        this.alumnoServicio.eliminar(id);
-        HashMap<String, Boolean> estadoUsuarioEliminado = new HashMap<>();
-        estadoUsuarioEliminado.put("eliminado",true);
-        return ResponseEntity.ok(estadoUsuarioEliminado);
+        Alumno alumno = alumnoServicio.obtenerPorId(id);
+        if (alumno == null) {
+            return ResponseEntity.notFound().build();
+        }
+        alumnoServicio.eliminar(id);
+        HashMap<String, Boolean> respuesta = new HashMap<>();
+        respuesta.put("eliminado", true);
+        return ResponseEntity.ok(respuesta);
     }
 }
