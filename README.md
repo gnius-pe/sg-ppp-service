@@ -53,6 +53,45 @@ Backend del sistema de gestión de prácticas pre-profesionales desarrollado con
 | RevisionPreDocumentoPPP | Revisión realizada por el docente evaluador |
 | Docente | Miembro de la comisión PPP encargado de revisar |
 
+## Calidad de Código con SonarQube
+
+Este proyecto utiliza **SonarQube** para el análisis continuo de la calidad del código. SonarQube es una plataforma open-source que permite:
+
+- **Análisis estático de código** - Detecta bugs, vulnerabilidades y code smells
+- **Cobertura de código** - Medición del porcentaje de código cubierto por pruebas
+- **Technical Debt** - Identifica el tiempo estimado para resolver problemas técnicos
+- **Métricas de calidad** - Complejidad ciclomática, duplicación, etc.
+
+### Estado Actual
+
+[![Captura-de-pantalla-2026-04-04-003842.png](https://i.postimg.cc/DfL7Ng2C/Captura-de-pantalla-2026-04-04-003842.png)](https://postimg.cc/bdYXD1Sb)
+
+### Levantar SonarQube
+
+El proyecto incluye SonarQube en docker-compose. Para levantarlo:
+
+```bash
+docker compose up -d sonarqube
+```
+
+Acceder al dashboard en: **http://localhost:9100** (admin/admin)
+
+### Ejecutar Análisis
+
+```bash
+./mvnw sonar:sonar
+```
+
+### Importancia
+
+Mantener un código de calidad es fundamental para:
+- **Mantenibilidad** - Código limpio y fácil de entender
+- **Confiabilidad** - Menos bugs y errores en producción
+- **Seguridad** - Detección temprana de vulnerabilidades
+- **Technical Debt** - Evitar acumulación de deuda técnica
+
+---
+
 ## Requisitos para ejecución
 
 ### Prerequisites
