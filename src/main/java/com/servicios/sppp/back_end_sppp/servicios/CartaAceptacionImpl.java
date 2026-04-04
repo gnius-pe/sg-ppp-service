@@ -1,5 +1,6 @@
 package com.servicios.sppp.back_end_sppp.servicios;
 
+import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionCompletaRequest;
 import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionRequest;
 import com.servicios.sppp.back_end_sppp.modelos.Alumno;
 import com.servicios.sppp.back_end_sppp.modelos.CartaACeptacion;
@@ -9,6 +10,7 @@ import com.servicios.sppp.back_end_sppp.repositorios.CartaAceptacionRepositorio;
 import com.servicios.sppp.back_end_sppp.repositorios.EstadoCartaAceptacionRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,6 +88,7 @@ public class CartaAceptacionImpl implements IMetodosCRUD<CartaACeptacion>{
         carta.setEstado(estado);
 
         CartaACeptacion guardada = guardar(carta);
+
         return ResultadoOperacion.exito(guardada, "Carta de aceptación creada exitosamente");
     }
 
@@ -139,5 +142,54 @@ public class CartaAceptacionImpl implements IMetodosCRUD<CartaACeptacion>{
         }
         eliminar(id);
         return ResultadoOperacion.exito(null, "Carta de aceptación eliminada exitosamente");
+    }
+
+    @Autowired
+    private ArchivoServicio archivoServicio;
+
+    public ResultadoOperacion<CartaACeptacion> guardarConArchivo(CartaAceptacionCompletaRequest request, MultipartFile archivo) {
+        Alumno alumno = null;
+        if (request.getIdAlumno() != null) {
+            alumno = alumnoRepositorio.findByIdAndIsDeletedFalse(request.getIdAlumno()).orElse(null);
+            if (alumno == null) {
+                return ResultadoOperacion.error("Alumno no encontrado");
+            }
+        }
+
+        EstadoCartaAceptacion estado = null;
+        if (request.getNombreEstado() != null && !request.getNombreEstado().isEmpty()) {
+            Optional<EstadoCartaAceptacion> estadoOpt = obtenerEstadoPorNombre(request.getNombreEstado());
+            if (estadoOpt.isEmpty()) {
+                return ResultadoOperacion.error("Estado no válido: " + request.getNombreEstado());
+            }
+            estado = estadoOpt.get();
+        }
+
+        String rutaArchivo = null;
+        String urlPrefirmada = null;
+        String url = null;
+
+        if (archivo != null && !archivo.isEmpty()) {
+            try {
+                ArchivoServicio.ResultadoArchivo resultadoArchivo = archivoServicio.subirArchivo(archivo, "cartas-aceptacion");
+                rutaArchivo = resultadoArchivo.getRuta();
+                urlPrefirmada = resultadoArchivo.getUrlPrefirmada();
+                url = resultadoArchivo.getUrl();
+            } catch (Exception e) {
+                return ResultadoOperacion.error("Error al subir archivo: " + e.getMessage());
+            }
+        }
+
+        CartaACeptacion carta = new CartaACeptacion();
+        carta.setTitulo(request.getTitulo());
+        carta.setDescripcion(request.getDescripcion());
+        carta.setFechaEntrega(LocalDate.now().toString());
+        carta.setRutaArchivo(rutaArchivo);
+        carta.setAlumno(alumno);
+        carta.setUrl(url);
+        carta.setEstado(estado);
+
+        CartaACeptacion guardada = guardar(carta);
+        return ResultadoOperacion.exito(guardada, "Carta de aceptación creada exitosamente con archivo");
     }
 }
