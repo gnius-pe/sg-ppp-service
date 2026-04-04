@@ -9,6 +9,7 @@ public class CartaAceptacionResponse {
     private String descripcion;
     private String fechaEntrega;
     private String url;
+    private String urlPrefirmada;
     private EstadoCartaAceptacion estado;
     private AlumnoResponse alumno;
     private boolean isDeleted;
@@ -54,6 +55,14 @@ public class CartaAceptacionResponse {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getUrlPrefirmada() {
+        return urlPrefirmada;
+    }
+
+    public void setUrlPrefirmada(String urlPrefirmada) {
+        this.urlPrefirmada = urlPrefirmada;
     }
 
     public EstadoCartaAceptacion getEstado() {
