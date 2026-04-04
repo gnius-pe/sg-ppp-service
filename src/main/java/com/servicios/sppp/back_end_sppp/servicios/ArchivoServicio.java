@@ -51,9 +51,9 @@ public class ArchivoServicio {
         );
         
         String urlPrefirmada = generarUrlPrefirmada(rutaCompleta);
-        
         ResultadoArchivo resultado = new ResultadoArchivo();
         resultado.setRuta(rutaCompleta);
+        resultado.setUrl(minioUrl + "/" + rutaCompleta);
         resultado.setUrlPrefirmada(urlPrefirmada);
         
         return resultado;
@@ -87,6 +87,7 @@ public class ArchivoServicio {
     public static class ResultadoArchivo {
         private String ruta;
         private String urlPrefirmada;
+        private String url;
 
         public String getRuta() {
             return ruta;
@@ -102,6 +103,14 @@ public class ArchivoServicio {
 
         public void setUrlPrefirmada(String urlPrefirmada) {
             this.urlPrefirmada = urlPrefirmada;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 }
