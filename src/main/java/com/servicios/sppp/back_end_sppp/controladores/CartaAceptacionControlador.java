@@ -1,6 +1,7 @@
 package com.servicios.sppp.back_end_sppp.controladores;
 
 import com.servicios.sppp.back_end_sppp.config.ApiResponse;
+import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionCompletaRequest;
 import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionRequest;
 import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionResponse;
 import com.servicios.sppp.back_end_sppp.mapper.CartaAceptacionMapper;
@@ -67,6 +68,30 @@ public class CartaAceptacionControlador {
         return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
     }
 
+    @Operation(summary = "Crear carta con archivo", description = "Crea una carta de aceptación junto con su archivo PDF en una sola llamada")
+    @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
+    @PostMapping(value = "/crear-con-archivo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<CartaAceptacionResponse>> crearConArchivo(
+            @Parameter(description = "Título de la carta") @RequestParam("titulo") String titulo,
+            @Parameter(description = "Descripción de la carta") @RequestParam(value = "descripcion", required = false) String descripcion,
+            @Parameter(description = "ID del alumno") @RequestParam(value = "idAlumno", required = false) Long idAlumno,
+            @Parameter(description = "Nombre del estado") @RequestParam(value = "nombreEstado", required = false) String nombreEstado,
+            @Parameter(description = "Archivo PDF") @RequestParam(value = "archivo", required = false) MultipartFile archivo) {
+        
+        CartaAceptacionCompletaRequest request = new CartaAceptacionCompletaRequest();
+        request.setTitulo(titulo);
+        request.setDescripcion(descripcion);
+        request.setIdAlumno(idAlumno);
+        request.setNombreEstado(nombreEstado);
+        
+        ResultadoOperacion<CartaACeptacion> resultado = servicioCartaAceptacion.guardarConArchivo(request, archivo);
+        
+        if (!resultado.isSuccess()) {
+            return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
+        }
+        return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
+    }
+
     @Operation(summary = "Subir archivo PDF", description = "Sube un archivo PDF a MinIO y opcionalmente lo asocia a una carta de aceptación")
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PostMapping(value = "/subir-archivo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -80,7 +105,8 @@ public class CartaAceptacionControlador {
                 CartaACeptacion carta = servicioCartaAceptacion.obtenerPorId(idCarta);
                 if (carta != null) {
                     carta.setRutaArchivo(resultado.getRuta());
-                    carta.setUrl(resultado.getUrlPrefirmada());
+                    carta.setUrl(resultado.getUrl());
+
                     servicioCartaAceptacion.guardar(carta);
                 }
             }
@@ -128,5 +154,25 @@ public class CartaAceptacionControlador {
             return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
         }
         return ResponseEntity.ok(ApiResponse.success(mapper.toResponse(resultado.getData()), resultado.getMessage()));
+    }
+
+    @Operation(summary = "Obtener URL para visualizar PDF", description = "Genera una URL pre-firmada válida por 7 días para visualizar el archivo PDF")
+    @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
+    @GetMapping("/{id}/visualizar-pdf")
+    public ResponseEntity<ApiResponse<String>> obtenerUrlVisualizacion(@PathVariable long id) {
+        CartaACeptacion carta = servicioCartaAceptacion.obtenerPorId(id);
+        if (carta == null) {
+            return ResponseEntity.ok(ApiResponse.notFound("Carta de aceptación no encontrada"));
+        }
+        if (carta.getRutaArchivo() == null || carta.getRutaArchivo().isEmpty()) {
+            return ResponseEntity.ok(ApiResponse.badRequest("La carta no tiene archivo asociado"));
+        }
+        
+        try {
+            String urlPrefirmada = archivoServicio.generarUrlPrefirmada(carta.getRutaArchivo());
+            return ResponseEntity.ok(ApiResponse.success(urlPrefirmada, "URL para visualizar PDF"));
+        } catch (Exception e) {
+            return ResponseEntity.ok(ApiResponse.badRequest("Error al generar URL: " + e.getMessage()));
+        }
     }
 }
