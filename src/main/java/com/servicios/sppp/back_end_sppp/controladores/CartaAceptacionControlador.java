@@ -70,21 +70,22 @@ public class CartaAceptacionControlador {
     @Operation(summary = "Subir archivo PDF", description = "Sube un archivo PDF a MinIO y opcionalmente lo asocia a una carta de aceptación")
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PostMapping(value = "/subir-archivo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> subirArchivo(
+    public ResponseEntity<ApiResponse<ArchivoServicio.ResultadoArchivo>> subirArchivo(
             @Parameter(description = "Archivo PDF a subir", required = true) @RequestParam("archivo") MultipartFile archivo,
             @Parameter(description = "ID de la carta de aceptación (opcional)") @RequestParam(value = "idCarta", required = false) Long idCarta) {
         try {
-            String url = archivoServicio.subirArchivo(archivo, "cartas-aceptacion");
+            ArchivoServicio.ResultadoArchivo resultado = archivoServicio.subirArchivo(archivo, "cartas-aceptacion");
             
             if (idCarta != null) {
                 CartaACeptacion carta = servicioCartaAceptacion.obtenerPorId(idCarta);
                 if (carta != null) {
-                    carta.setUrl(url);
+                    carta.setRutaArchivo(resultado.getRuta());
+                    carta.setUrl(resultado.getUrlPrefirmada());
                     servicioCartaAceptacion.guardar(carta);
                 }
             }
             
-            return ResponseEntity.ok(ApiResponse.success(url, "Archivo subido exitosamente"));
+            return ResponseEntity.ok(ApiResponse.success(resultado, "Archivo subido exitosamente"));
         } catch (Exception e) {
             return ResponseEntity.ok(ApiResponse.badRequest("Error al subir archivo: " + e.getMessage()));
         }
