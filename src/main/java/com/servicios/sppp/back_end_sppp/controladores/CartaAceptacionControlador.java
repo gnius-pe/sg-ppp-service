@@ -5,11 +5,13 @@ import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionRequest;
 import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionResponse;
 import com.servicios.sppp.back_end_sppp.mapper.CartaAceptacionMapper;
 import com.servicios.sppp.back_end_sppp.modelos.CartaACeptacion;
+import com.servicios.sppp.back_end_sppp.servicios.ArchivoServicio;
 import com.servicios.sppp.back_end_sppp.servicios.CartaAceptacionImpl;
 import com.servicios.sppp.back_end_sppp.servicios.ResultadoOperacion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,6 +21,9 @@ public class CartaAceptacionControlador {
 
     @Autowired
     private CartaAceptacionImpl servicioCartaAceptacion;
+
+    @Autowired
+    private ArchivoServicio archivoServicio;
 
     private final CartaAceptacionMapper mapper = CartaAceptacionMapper.INSTANCE;
 
@@ -57,6 +62,28 @@ public class CartaAceptacionControlador {
             return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
         }
         return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
+    }
+
+    @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
+    @PostMapping("/subir-archivo")
+    public ResponseEntity<ApiResponse<String>> subirArchivo(
+            @RequestParam("archivo") MultipartFile archivo,
+            @RequestParam(value = "idCarta", required = false) Long idCarta) {
+        try {
+            String url = archivoServicio.subirArchivo(archivo, "cartas-aceptacion");
+            
+            if (idCarta != null) {
+                CartaACeptacion carta = servicioCartaAceptacion.obtenerPorId(idCarta);
+                if (carta != null) {
+                    carta.setUrl(url);
+                    servicioCartaAceptacion.guardar(carta);
+                }
+            }
+            
+            return ResponseEntity.ok(ApiResponse.success(url, "Archivo subido exitosamente"));
+        } catch (Exception e) {
+            return ResponseEntity.ok(ApiResponse.badRequest("Error al subir archivo: " + e.getMessage()));
+        }
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
