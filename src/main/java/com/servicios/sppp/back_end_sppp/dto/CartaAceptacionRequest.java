@@ -6,7 +6,7 @@ public class CartaAceptacionRequest {
     private String fechaEntrega;
     private String url;
     private Long idAlumno;
-    private Long idEstado;
+    private String nombreEstado;
 
     public CartaAceptacionRequest() {
     }
@@ -51,11 +51,11 @@ public class CartaAceptacionRequest {
         this.idAlumno = idAlumno;
     }
 
-    public Long getIdEstado() {
-        return idEstado;
+    public String getNombreEstado() {
+        return nombreEstado;
     }
 
-    public void setIdEstado(Long idEstado) {
-        this.idEstado = idEstado;
+    public void setNombreEstado(String nombreEstado) {
+        this.nombreEstado = nombreEstado;
     }
 }

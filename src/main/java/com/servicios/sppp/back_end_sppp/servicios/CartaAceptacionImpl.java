@@ -67,11 +67,12 @@ public class CartaAceptacionImpl implements IMetodosCRUD<CartaACeptacion>{
         }
 
         EstadoCartaAceptacion estado = null;
-        if (request.getIdEstado() != null) {
-            estado = estadoCartaAceptacionRepositorio.findById(request.getIdEstado()).orElse(null);
-            if (estado == null) {
-                return ResultadoOperacion.error("Estado no encontrado");
+        if (request.getNombreEstado() != null && !request.getNombreEstado().isEmpty()) {
+            Optional<EstadoCartaAceptacion> estadoOpt = obtenerEstadoPorNombre(request.getNombreEstado());
+            if (estadoOpt.isEmpty()) {
+                return ResultadoOperacion.error("Estado no válido: " + request.getNombreEstado());
             }
+            estado = estadoOpt.get();
         }
 
         CartaACeptacion carta = new CartaACeptacion();
@@ -102,9 +103,12 @@ public class CartaAceptacionImpl implements IMetodosCRUD<CartaACeptacion>{
             if (alumno != null) cartaExistente.setAlumno(alumno);
         }
 
-        if (request.getIdEstado() != null) {
-            EstadoCartaAceptacion estado = estadoCartaAceptacionRepositorio.findById(request.getIdEstado()).orElse(null);
-            if (estado != null) cartaExistente.setEstado(estado);
+        if (request.getNombreEstado() != null && !request.getNombreEstado().isEmpty()) {
+            Optional<EstadoCartaAceptacion> estadoOpt = obtenerEstadoPorNombre(request.getNombreEstado());
+            if (estadoOpt.isEmpty()) {
+                return ResultadoOperacion.error("Estado no válido: " + request.getNombreEstado());
+            }
+            cartaExistente.setEstado(estadoOpt.get());
         }
 
         CartaACeptacion actualizada = guardar(cartaExistente);
