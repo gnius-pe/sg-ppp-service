@@ -26,6 +26,7 @@ services:
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_CORS_ALLOWED_ORIGINS: "*"
     ports:
       - "9000:9000"
       - "9001:9001"
