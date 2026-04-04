@@ -38,6 +38,24 @@ services:
           cpus: '0.25'
           memory: 128M
 
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube_ppp
+    restart: unless-stopped
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    ports:
+      - "9100:9000"
+    volumes:
+      - volumen_sonar:/opt/sonarqube/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
 volumes:
   volumen_db:
   volumen_archivos:
+  volumen_sonar:
+  volumen_sonar_db:
