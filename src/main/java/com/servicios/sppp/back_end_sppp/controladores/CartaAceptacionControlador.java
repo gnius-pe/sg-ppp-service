@@ -8,6 +8,10 @@ import com.servicios.sppp.back_end_sppp.modelos.CartaACeptacion;
 import com.servicios.sppp.back_end_sppp.servicios.ArchivoServicio;
 import com.servicios.sppp.back_end_sppp.servicios.CartaAceptacionImpl;
 import com.servicios.sppp.back_end_sppp.servicios.ResultadoOperacion;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,11 +68,16 @@ public class CartaAceptacionControlador {
         return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
     }
 
+    @ApiOperation(value = "Subir archivo PDF", notes = "Sube un archivo PDF a MinIO y opcionalmente lo asocia a una carta de aceptación")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Archivo subido exitosamente"),
+        @ApiResponse(code = 400, message = "Error al subir archivo")
+    })
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PostMapping("/subir-archivo")
     public ResponseEntity<ApiResponse<String>> subirArchivo(
-            @RequestParam("archivo") MultipartFile archivo,
-            @RequestParam(value = "idCarta", required = false) Long idCarta) {
+            @ApiParam(value = "Archivo PDF a subir", required = true) @RequestParam("archivo") MultipartFile archivo,
+            @ApiParam(value = "ID de la carta de aceptación (opcional)") @RequestParam(value = "idCarta", required = false) Long idCarta) {
         try {
             String url = archivoServicio.subirArchivo(archivo, "cartas-aceptacion");
             

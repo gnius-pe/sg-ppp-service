@@ -28,7 +28,8 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/v2/api-docs/**",
                     "/swagger-resources/**",
-                    "/webjars/**"
+                    "/webjars/**",
+                    "/api/beta/cartas-aceptacion/subir-archivo"
                 ).permitAll()
                 .anyRequest().permitAll();
         
