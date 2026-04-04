@@ -2,16 +2,21 @@ package com.servicios.sppp.back_end_sppp.modelos;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "carta_aceptacion")
 public class CartaACeptacion implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
     private String titulo;
+
     private String descripcion;
 
     @Column(name = "fecha_entrega")
@@ -19,14 +24,31 @@ public class CartaACeptacion implements Serializable {
 
     private String url;
 
-    @Column(name = "estado_carta_aceptacion")
-    private boolean estadoCartaAceptacion;
+    @ManyToOne
+    @JoinColumn(name = "id_estado")
+    private EstadoCartaAceptacion estado;
 
     @ManyToOne
     @JoinColumn(name = "id_alumno")
     private Alumno alumno;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     public CartaACeptacion() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public long getId() {
@@ -69,12 +91,12 @@ public class CartaACeptacion implements Serializable {
         this.url = url;
     }
 
-    public boolean isEstadoCartaAceptacion() {
-        return estadoCartaAceptacion;
+    public EstadoCartaAceptacion getEstado() {
+        return estado;
     }
 
-    public void setEstadoCartaAceptacion(boolean estadoCartaAceptacion) {
-        this.estadoCartaAceptacion = estadoCartaAceptacion;
+    public void setEstado(EstadoCartaAceptacion estado) {
+        this.estado = estado;
     }
 
     public Alumno getAlumno() {
@@ -83,5 +105,29 @@ public class CartaACeptacion implements Serializable {
 
     public void setAlumno(Alumno alumno) {
         this.alumno = alumno;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
