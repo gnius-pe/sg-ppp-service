@@ -22,6 +22,7 @@ public class CartaACeptacion implements Serializable {
     @Column(name = "fecha_entrega")
     private String fechaEntrega;
 
+    @Column(name = "url", length = 1000)
     private String url;
 
     @Column(name = "ruta_archivo")
