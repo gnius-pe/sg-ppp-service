@@ -10,6 +10,8 @@ import com.servicios.sppp.back_end_sppp.repositorios.EstadoCartaAceptacionReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +80,7 @@ public class CartaAceptacionImpl implements IMetodosCRUD<CartaACeptacion>{
         CartaACeptacion carta = new CartaACeptacion();
         carta.setTitulo(request.getTitulo());
         carta.setDescripcion(request.getDescripcion());
-        carta.setFechaEntrega(request.getFechaEntrega());
+        carta.setFechaEntrega(LocalDate.now().toString());
         carta.setUrl(request.getUrl());
         carta.setAlumno(alumno);
         carta.setEstado(estado);
@@ -95,7 +97,6 @@ public class CartaAceptacionImpl implements IMetodosCRUD<CartaACeptacion>{
 
         if (request.getTitulo() != null) cartaExistente.setTitulo(request.getTitulo());
         if (request.getDescripcion() != null) cartaExistente.setDescripcion(request.getDescripcion());
-        if (request.getFechaEntrega() != null) cartaExistente.setFechaEntrega(request.getFechaEntrega());
         if (request.getUrl() != null) cartaExistente.setUrl(request.getUrl());
 
         if (request.getIdAlumno() != null) {
