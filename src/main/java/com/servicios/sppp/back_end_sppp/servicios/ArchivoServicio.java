@@ -1,5 +1,6 @@
 package com.servicios.sppp.back_end_sppp.servicios;
 
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
@@ -23,7 +24,7 @@ public class ArchivoServicio {
     @Value("${minio.url}")
     private String minioUrl;
 
-    public String subirArchivo(MultipartFile archivo, String carpeta) throws Exception {
+    public ResultadoArchivo subirArchivo(MultipartFile archivo, String carpeta) throws Exception {
         String nombreOriginal = archivo.getOriginalFilename();
         String extension = nombreOriginal != null && nombreOriginal.contains(".") 
             ? nombreOriginal.substring(nombreOriginal.lastIndexOf(".")) 
@@ -49,16 +50,58 @@ public class ArchivoServicio {
                 .build()
         );
         
-        return minioUrl + "/" + bucketName + "/" + rutaCompleta;
+        String urlPrefirmada = generarUrlPrefirmada(rutaCompleta);
+        
+        ResultadoArchivo resultado = new ResultadoArchivo();
+        resultado.setRuta(rutaCompleta);
+        resultado.setUrlPrefirmada(urlPrefirmada);
+        
+        return resultado;
     }
 
-    public void eliminarArchivo(String url) throws Exception {
-        String ruta = url.replace(minioUrl + "/" + bucketName + "/", "");
+    public String generarUrlPrefirmada(String rutaArchivo) throws Exception {
+        try {
+            String url = minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                    .bucket(bucketName)
+                    .object(rutaArchivo)
+                    .method(io.minio.http.Method.GET)
+                    .expiry(7 * 24 * 60 * 60)
+                    .build()
+            );
+            return url;
+        } catch (Exception e) {
+            return minioUrl + "/" + bucketName + "/" + rutaArchivo;
+        }
+    }
+
+    public void eliminarArchivo(String ruta) throws Exception {
         minioClient.removeObject(
             RemoveObjectArgs.builder()
                 .bucket(bucketName)
                 .object(ruta)
                 .build()
         );
+    }
+
+    public static class ResultadoArchivo {
+        private String ruta;
+        private String urlPrefirmada;
+
+        public String getRuta() {
+            return ruta;
+        }
+
+        public void setRuta(String ruta) {
+            this.ruta = ruta;
+        }
+
+        public String getUrlPrefirmada() {
+            return urlPrefirmada;
+        }
+
+        public void setUrlPrefirmada(String urlPrefirmada) {
+            this.urlPrefirmada = urlPrefirmada;
+        }
     }
 }
