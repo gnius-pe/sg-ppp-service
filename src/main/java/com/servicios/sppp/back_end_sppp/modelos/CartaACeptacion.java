@@ -24,6 +24,9 @@ public class CartaACeptacion implements Serializable {
 
     private String url;
 
+    @Column(name = "ruta_archivo")
+    private String rutaArchivo;
+
     @ManyToOne
     @JoinColumn(name = "id_estado")
     private EstadoCartaAceptacion estado;
@@ -89,6 +92,14 @@ public class CartaACeptacion implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
     public EstadoCartaAceptacion getEstado() {
