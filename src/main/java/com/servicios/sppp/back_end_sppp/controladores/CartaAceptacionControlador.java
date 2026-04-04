@@ -4,11 +4,7 @@ import com.servicios.sppp.back_end_sppp.config.ApiResponse;
 import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionRequest;
 import com.servicios.sppp.back_end_sppp.dto.CartaAceptacionResponse;
 import com.servicios.sppp.back_end_sppp.mapper.CartaAceptacionMapper;
-import com.servicios.sppp.back_end_sppp.modelos.Alumno;
 import com.servicios.sppp.back_end_sppp.modelos.CartaACeptacion;
-import com.servicios.sppp.back_end_sppp.modelos.EstadoCartaAceptacion;
-import com.servicios.sppp.back_end_sppp.repositorios.AlumnoRepositorio;
-import com.servicios.sppp.back_end_sppp.repositorios.EstadoCartaAceptacionRepositorio;
 import com.servicios.sppp.back_end_sppp.servicios.CartaAceptacionImpl;
 import com.servicios.sppp.back_end_sppp.servicios.ResultadoOperacion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +19,6 @@ public class CartaAceptacionControlador {
 
     @Autowired
     private CartaAceptacionImpl servicioCartaAceptacion;
-
-    @Autowired
-    private AlumnoRepositorio alumnoRepositorio;
-
-    @Autowired
-    private EstadoCartaAceptacionRepositorio estadoRepositorio;
 
     private final CartaAceptacionMapper mapper = CartaAceptacionMapper.INSTANCE;
 
@@ -61,57 +51,26 @@ public class CartaAceptacionControlador {
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PostMapping
     public ResponseEntity<ApiResponse<CartaAceptacionResponse>> guardar(@RequestBody CartaAceptacionRequest request) {
-        CartaACeptacion carta = new CartaACeptacion();
-        carta.setTitulo(request.getTitulo());
-        carta.setDescripcion(request.getDescripcion());
-        carta.setFechaEntrega(request.getFechaEntrega());
-        carta.setUrl(request.getUrl());
-
-        if (request.getIdAlumno() != null) {
-            Alumno alumno = alumnoRepositorio.findByIdAndIsDeletedFalse(request.getIdAlumno()).orElse(null);
-            if (alumno == null) {
-                return ResponseEntity.ok(ApiResponse.badRequest("Alumno no encontrado"));
-            }
-            carta.setAlumno(alumno);
+        ResultadoOperacion<CartaACeptacion> resultado = servicioCartaAceptacion.guardarDesdeRequest(request);
+        
+        if (!resultado.isSuccess()) {
+            return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
         }
-
-        if (request.getIdEstado() != null) {
-            EstadoCartaAceptacion estado = estadoRepositorio.findById(request.getIdEstado()).orElse(null);
-            if (estado == null) {
-                return ResponseEntity.ok(ApiResponse.badRequest("Estado no encontrado"));
-            }
-            carta.setEstado(estado);
-        }
-
-        CartaACeptacion nuevaCarta = servicioCartaAceptacion.guardar(carta);
-        return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(nuevaCarta), "Carta de aceptación creada exitosamente"));
+        return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<CartaAceptacionResponse>> actualizar(@PathVariable long id, @RequestBody CartaAceptacionRequest request) {
-        CartaACeptacion cartaExistente = servicioCartaAceptacion.obtenerPorId(id);
-        if (cartaExistente == null) {
-            return ResponseEntity.ok(ApiResponse.notFound("Carta de aceptación no encontrada"));
+        ResultadoOperacion<CartaACeptacion> resultado = servicioCartaAceptacion.actualizarDesdeRequest(id, request);
+        
+        if (!resultado.isEncontrado()) {
+            return ResponseEntity.ok(ApiResponse.notFound(resultado.getMessage()));
         }
-
-        if (request.getTitulo() != null) cartaExistente.setTitulo(request.getTitulo());
-        if (request.getDescripcion() != null) cartaExistente.setDescripcion(request.getDescripcion());
-        if (request.getFechaEntrega() != null) cartaExistente.setFechaEntrega(request.getFechaEntrega());
-        if (request.getUrl() != null) cartaExistente.setUrl(request.getUrl());
-
-        if (request.getIdAlumno() != null) {
-            Alumno alumno = alumnoRepositorio.findByIdAndIsDeletedFalse(request.getIdAlumno()).orElse(null);
-            if (alumno != null) cartaExistente.setAlumno(alumno);
+        if (!resultado.isSuccess()) {
+            return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
         }
-
-        if (request.getIdEstado() != null) {
-            EstadoCartaAceptacion estado = estadoRepositorio.findById(request.getIdEstado()).orElse(null);
-            if (estado != null) cartaExistente.setEstado(estado);
-        }
-
-        CartaACeptacion actualizada = servicioCartaAceptacion.guardar(cartaExistente);
-        return ResponseEntity.ok(ApiResponse.success(mapper.toResponse(actualizada), "Carta de aceptación actualizada exitosamente"));
+        return ResponseEntity.ok(ApiResponse.success(mapper.toResponse(resultado.getData()), resultado.getMessage()));
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
