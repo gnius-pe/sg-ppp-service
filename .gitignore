@@ -34,3 +34,8 @@ build/
 
 ### AGENTS ###
 AGENTS.md
+
+### Environment Variables ###
+.env
+.env.*
+!.env.example
