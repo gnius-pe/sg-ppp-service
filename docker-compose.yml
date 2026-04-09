@@ -1,17 +1,21 @@
+version: '3.8'
+
 services:
   data_base_ppp:
     image: mysql:8.0
     container_name: data_base_ppp
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: datasppp
-      MYSQL_USER: sppp
-      MYSQL_PASSWORD: sppp123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-datasppp}
+      MYSQL_USER: ${MYSQL_USER:-sppp}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-sppp123}
     ports:
       - "3306:3306"
     volumes:
       - volumen_db:/var/lib/mysql
+    networks:
+      - red_interna
     deploy:
       resources:
         limits:
@@ -24,14 +28,15 @@ services:
     command: server /data --console-address ":9001"
     restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-      MINIO_CORS_ALLOWED_ORIGINS: "*"
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
       - volumen_archivos:/data
+    networks:
+      - red_interna
     deploy:
       resources:
         limits:
@@ -48,11 +53,34 @@ services:
       - "9100:9000"
     volumes:
       - volumen_sonar:/opt/sonarqube/data
+    networks:
+      - red_interna
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: 2G
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok_tunnels
+    restart: unless-stopped
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    volumes:
+      - ./ngrok.yml:/etc/ngrok/ngrok.yml:ro
+    ports:
+      - "4040:4040"
+    networks:
+      - red_interna
+    depends_on:
+      - data_base_ppp
+      - archivos_ppp
+      - sonarqube
+
+networks:
+  red_interna:
+    driver: bridge
 
 volumes:
   volumen_db:
