@@ -9,7 +9,6 @@ tunnels:
   mysql:
     proto: tcp
     addr: data_base_ppp:3306
-    remote_addr: free
     metadata: MySQL-Database
 
   minio-api:
