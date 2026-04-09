@@ -1,5 +1,4 @@
 version: "2"
-authtoken: ${NGROK_AUTHTOKEN}
 
 log_level: info
 log_format: json
@@ -14,18 +13,18 @@ tunnels:
   minio-api:
     proto: http
     addr: archivos_ppp:9000
-    hostname: ${MINIO_SUBDOMAIN:-minio-api}.ngrok-free.app
+    hostname: minio-api.ngrok-free.app
     inspect: true
 
   minio-console:
     proto: http
     addr: archivos_ppp:9001
-    hostname: ${MINIO_CONSOLE_SUBDOMAIN:-minio-console}.ngrok-free.app
+    hostname: minio-console.ngrok-free.app
     inspect: true
 
   sonarqube:
     proto: http
     addr: sonarqube:9000
-    hostname: ${SONARQUBE_SUBDOMAIN:-sonarqube}.ngrok-free.app
+    hostname: sonarqube.ngrok-free.app
     inspect: false
     host_header: localhost:9000
