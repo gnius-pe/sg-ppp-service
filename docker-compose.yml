@@ -65,6 +65,7 @@ services:
     image: ngrok/ngrok:latest
     container_name: ngrok_tunnels
     restart: unless-stopped
+    command: start --all --config /etc/ngrok/ngrok.yml
     environment:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     volumes:
