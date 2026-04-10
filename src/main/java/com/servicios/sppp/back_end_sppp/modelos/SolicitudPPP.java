@@ -19,7 +19,7 @@ public class SolicitudPPP implements Serializable {
 
     private String url;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_estado")
     private EstadoSolicitudPPP estado;
 
