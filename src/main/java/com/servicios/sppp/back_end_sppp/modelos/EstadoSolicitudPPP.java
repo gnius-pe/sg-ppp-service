@@ -25,6 +25,9 @@ public class EstadoSolicitudPPP implements Serializable {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "estado")
+    private SolicitudPPP solicitud;
+
     public EstadoSolicitudPPP() {
     }
 
@@ -78,5 +81,13 @@ public class EstadoSolicitudPPP implements Serializable {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public SolicitudPPP getSolicitud() {
+        return solicitud;
+    }
+
+    public void setSolicitud(SolicitudPPP solicitud) {
+        this.solicitud = solicitud;
     }
 }
