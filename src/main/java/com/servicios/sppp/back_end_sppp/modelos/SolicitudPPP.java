@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class SolicitudPPP implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -18,8 +19,9 @@ public class SolicitudPPP implements Serializable {
 
     private String url;
 
-    @Column(name = "estado_solicitud_ppp")
-    boolean estadoSolicitudPPP;
+    @ManyToOne
+    @JoinColumn(name = "id_estado")
+    private EstadoSolicitudPPP estado;
 
     @ManyToOne
     @JoinColumn(name = "id_alumno")
@@ -60,12 +62,12 @@ public class SolicitudPPP implements Serializable {
         this.asunto = asunto;
     }
 
-    public boolean isEstadoSolicitudPPP() {
-        return estadoSolicitudPPP;
+    public EstadoSolicitudPPP getEstado() {
+        return estado;
     }
 
-    public void setEstadoSolicitudPPP(boolean estadoSolicitudPPP) {
-        this.estadoSolicitudPPP = estadoSolicitudPPP;
+    public void setEstado(EstadoSolicitudPPP estado) {
+        this.estado = estado;
     }
 
     public Alumno getAlumno() {
