@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   data_base_ppp:
@@ -60,24 +59,6 @@ services:
         limits:
           cpus: '1'
           memory: 2G
-
-  ngrok:
-    image: ngrok/ngrok:latest
-    container_name: ngrok_tunnels
-    restart: unless-stopped
-    command: start --all --config /etc/ngrok/ngrok.yml
-    environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
-    volumes:
-      - ./ngrok.yml:/etc/ngrok/ngrok.yml:ro
-    ports:
-      - "4040:4040"
-    networks:
-      - red_interna
-    depends_on:
-      - data_base_ppp
-      - archivos_ppp
-      - sonarqube
 
 networks:
   red_interna:

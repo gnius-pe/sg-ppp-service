@@ -57,17 +57,6 @@ public class CartaAceptacionControlador {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
-    @PostMapping
-    public ResponseEntity<ApiResponse<CartaAceptacionResponse>> guardar(@RequestBody CartaAceptacionRequest request) {
-        ResultadoOperacion<CartaACeptacion> resultado = servicioCartaAceptacion.guardarDesdeRequest(request);
-        
-        if (!resultado.isSuccess()) {
-            return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
-        }
-        return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
-    }
-
     @Operation(summary = "Crear carta con archivo", description = "Crea una carta de aceptación junto con su archivo PDF en una sola llamada")
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
     @PostMapping(value = "/crear-con-archivo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -90,31 +79,6 @@ public class CartaAceptacionControlador {
             return ResponseEntity.ok(ApiResponse.badRequest(resultado.getMessage()));
         }
         return ResponseEntity.status(201).body(ApiResponse.created(mapper.toResponse(resultado.getData()), resultado.getMessage()));
-    }
-
-    @Operation(summary = "Subir archivo PDF", description = "Sube un archivo PDF a MinIO y opcionalmente lo asocia a una carta de aceptación")
-    @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
-    @PostMapping(value = "/subir-archivo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ArchivoServicio.ResultadoArchivo>> subirArchivo(
-            @Parameter(description = "Archivo PDF a subir", required = true) @RequestParam("archivo") MultipartFile archivo,
-            @Parameter(description = "ID de la carta de aceptación (opcional)") @RequestParam(value = "idCarta", required = false) Long idCarta) {
-        try {
-            ArchivoServicio.ResultadoArchivo resultado = archivoServicio.subirArchivo(archivo, "cartas-aceptacion");
-            
-            if (idCarta != null) {
-                CartaACeptacion carta = servicioCartaAceptacion.obtenerPorId(idCarta);
-                if (carta != null) {
-                    carta.setRutaArchivo(resultado.getRuta());
-                    carta.setUrl(resultado.getUrl());
-
-                    servicioCartaAceptacion.guardar(carta);
-                }
-            }
-            
-            return ResponseEntity.ok(ApiResponse.success(resultado, "Archivo subido exitosamente"));
-        } catch (Exception e) {
-            return ResponseEntity.ok(ApiResponse.badRequest("Error al subir archivo: " + e.getMessage()));
-        }
     }
 
     @CrossOrigin(origins = {"http://127.0.0.1:5173","https://sysppp.netlify.app/"})
